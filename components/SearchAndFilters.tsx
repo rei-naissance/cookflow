@@ -73,7 +73,7 @@ export function SearchAndFilters() {
       <div className="text-center mb-4">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="inline-flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          className="inline-flex items-center space-x-2 px-4 py-2 bg-primary-100 hover:bg-primary-200 text-primary-700 rounded-lg transition-colors"
         >
           <Filter size={18} />
           <span>Filters</span>
