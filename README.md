@@ -220,7 +220,4 @@ This project is open source and available under the [MIT License](LICENSE).
 - Icons by [Lucide](https://lucide.dev/)
 
 ---
-
-**Happy Cooking! 👨‍🍳👩‍🍳**
-
-Built with ❤️ for the cooking community
+Have fun y'all :P
