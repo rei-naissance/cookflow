@@ -1,8 +1,7 @@
-
 'use client'
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import { createClientSupabaseClient } from '@/lib/supabaseClient'
@@ -41,11 +40,18 @@ export default function SubmitRecipePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Redirect if not authenticated
-  if (!user) {
-    router.push('/login')
-    return null
-  }
+  // Redirect if not authenticated (client-only)
+  // and perform any localStorage logic (if needed)
+  // This ensures router and localStorage are only accessed on the client
+  useEffect(() => {
+    if (!user) {
+      router.push('/login')
+    }
+    // Example: localStorage usage (add your logic here if needed)
+    // if (typeof window !== 'undefined') {
+    //   localStorage.setItem('someKey', 'someValue')
+    // }
+  }, [user, router])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -105,7 +111,7 @@ export default function SubmitRecipePage() {
       let imageUrl = null
 
       // Upload image if provided
-      if (image) {
+      if (image && user) {
         const fileExt = image.name.split('.').pop()
         const fileName = `${user.id}/${Date.now()}.${fileExt}`
         
@@ -123,21 +129,26 @@ export default function SubmitRecipePage() {
       }
 
       // Create recipe
-      const { data: recipe, error: recipeError } = await supabase
-        .from('recipes')
-        .insert({
-          title: title.trim(),
-          author_id: user.id,
-          category,
-          difficulty,
-          prep_time: prepTime,
-          cook_time: cookTime,
-          image_url: imageUrl
-        })
-        .select()
-        .single()
-
-      if (recipeError) throw recipeError
+      let recipe = null
+      let recipeError = null
+      if (user) {
+        const result = await supabase
+          .from('recipes')
+          .insert({
+            title: title.trim(),
+            author_id: user.id,
+            category,
+            difficulty,
+            prep_time: prepTime,
+            cook_time: cookTime,
+            image_url: imageUrl
+          })
+          .select()
+          .single()
+        recipe = result.data
+        recipeError = result.error
+        if (recipeError) throw recipeError
+      }
 
       // Create ingredients
       const ingredientInserts = ingredients
