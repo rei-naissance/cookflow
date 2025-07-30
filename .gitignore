@@ -1,5 +1,4 @@
 .env
 /node_modules
 .next
-supabase-schema.sql
 lib/supabase.ts
