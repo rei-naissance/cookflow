@@ -6,7 +6,7 @@ CREATE TABLE public.users (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT NOT NULL,
   name TEXT,
-  avatar_url TEXT,
+  avatar_url TEXT, -- URL to profile picture
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -130,6 +130,7 @@ CREATE TABLE public.reviews (
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
   rating INTEGER CHECK (rating >= 1 AND rating <= 5) NOT NULL,
   comment TEXT,
+  image_url TEXT, -- Optional image for review
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(recipe_id, user_id) -- One review per user per recipe
 );
@@ -167,17 +168,19 @@ CREATE INDEX idx_reviews_user_id ON public.reviews(user_id);
 
 -- Create storage bucket for recipe images
 INSERT INTO storage.buckets (id, name, public) VALUES ('recipe-images', 'recipe-images', true);
+INSERT INTO storage.buckets (id, name, public) VALUES ('profile-images', 'profile-images', true);
+INSERT INTO storage.buckets (id, name, public) VALUES ('review-images', 'review-images', true);
 
 -- Allow authenticated users to upload images
-CREATE POLICY "Authenticated users can upload recipe images" ON storage.objects
+CREATE POLICY "Authenticated users can upload images" ON storage.objects
   FOR INSERT WITH CHECK (
-    bucket_id = 'recipe-images' AND
+    bucket_id IN ('recipe-images', 'profile-images', 'review-images') AND
     auth.role() = 'authenticated'
   );
 
 -- Allow everyone to view recipe images
-CREATE POLICY "Anyone can view recipe images" ON storage.objects
-  FOR SELECT USING (bucket_id = 'recipe-images');
+CREATE POLICY "Anyone can view images" ON storage.objects
+  FOR SELECT USING (bucket_id IN ('recipe-images', 'profile-images', 'review-images'));
 
 -- Allow users to update their own uploaded images
 CREATE POLICY "Users can update own recipe images" ON storage.objects

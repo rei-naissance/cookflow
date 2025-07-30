@@ -11,6 +11,8 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -23,6 +25,17 @@ export default function LoginPage() {
     setError('')
 
     try {
+      let avatarUrl = null
+      if (isSignUp && avatarFile) {
+        // Upload avatar to Supabase storage
+        const fileExt = avatarFile.name.split('.').pop()
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`
+        const { data, error: uploadError } = await supabase.storage
+          .from('profile-images')
+          .upload(fileName, avatarFile)
+        if (uploadError) throw uploadError
+        avatarUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/profile-images/${fileName}`
+      }
       if (isSignUp) {
         // Sign up
         const { error } = await supabase.auth.signUp({
@@ -30,7 +43,8 @@ export default function LoginPage() {
           password,
           options: {
             data: {
-              name: name
+              name: name,
+              avatar_url: avatarUrl
             }
           }
         })
@@ -87,26 +101,54 @@ export default function LoginPage() {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {isSignUp && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Name
-                </label>
-                <div className="mt-1 relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400" />
+              <>
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                    Name
+                  </label>
+                  <div className="mt-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required={isSignUp}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="appearance-none text-gray-900 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Your name"
+                    />
                   </div>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required={isSignUp}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="appearance-none text-gray-900 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Your name"
-                  />
                 </div>
-              </div>
+                <div>
+                  <label htmlFor="avatar" className="block text-sm font-medium text-gray-700 mt-4">
+                    Profile Picture (optional)
+                  </label>
+                  <input
+                    id="avatar"
+                    name="avatar"
+                    type="file"
+                    accept="image/*"
+                    onChange={e => {
+                      const file = e.target.files?.[0] || null
+                      setAvatarFile(file)
+                      if (file) {
+                        const reader = new FileReader()
+                        reader.onload = () => setAvatarPreview(reader.result as string)
+                        reader.readAsDataURL(file)
+                      } else {
+                        setAvatarPreview(null)
+                      }
+                    }}
+                    className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  />
+                  {avatarPreview && (
+                    <img src={avatarPreview} alt="Avatar Preview" className="mt-2 w-20 h-20 rounded-full object-cover border" />
+                  )}
+                </div>
+              </>
             )}
 
             <div>
