@@ -22,12 +22,21 @@ export default function ProfilePage() {
   const [editError, setEditError] = useState('')
 
   useEffect(() => {
-    if (!loading && !user) {
+    // If user logs out, reset profile state and redirect to login
+    if (!user) {
+      setProfile(null)
+      setSubmittedRecipes([])
+      setFavoriteRecipes([])
+      setEditName('')
+      setEditAvatarFile(null)
+      setEditAvatarPreview(null)
+      setEditOpen(false)
+      setLoading(false)
       router.push('/login')
       return
     }
+    // If user is logged in, fetch profile and recipes
     const fetchData = async () => {
-      if (!user) return;
       setLoading(true)
       const { data: profileData } = await supabase
         .from('users')
