@@ -1,50 +1,52 @@
-import { createServerSupabaseClient } from '@/lib/supabaseServer'
-import { redirect } from 'next/navigation'
+"use client"
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/components/AuthProvider'
+import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import { RecipeGrid } from '@/components/RecipeGrid'
 import { User, Heart, ChefHat } from 'lucide-react'
 
-export default async function ProfilePage() {
-  const supabase = createServerSupabaseClient()
-  
-  // Get current user
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    redirect('/login')
-  }
+export default function ProfilePage() {
+  const { user } = useAuth()
+  const router = useRouter()
+  const supabase = createClientSupabaseClient()
+  const [profile, setProfile] = useState<any>(null)
+  const [submittedRecipes, setSubmittedRecipes] = useState<any[]>([])
+  const [favoriteRecipes, setFavoriteRecipes] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Fetch user profile
-  const { data: profile } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  useEffect(() => {
+    if (!user) {
+      router.push('/login')
+      return
+    }
+    const fetchData = async () => {
+      setLoading(true)
+      const { data: profileData } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      setProfile(profileData)
 
-  // Fetch user's submitted recipes
-  const { data: submittedRecipes } = await supabase
-    .from('recipes')
-    .select(`
-      *,
-      users!recipes_author_id_fkey(name),
-      reviews(rating)
-    `)
-    .eq('author_id', user.id)
-    .order('created_at', { ascending: false })
+      const { data: submitted } = await supabase
+        .from('recipes')
+        .select(`*, users!recipes_author_id_fkey(name), reviews(rating)`)
+        .eq('author_id', user.id)
+        .order('created_at', { ascending: false })
+      setSubmittedRecipes(submitted || [])
 
-  // Fetch user's favorite recipes
-  const { data: favoriteRecipes } = await supabase
-    .from('favorites')
-    .select(`
-      recipes(
-        *,
-        users!recipes_author_id_fkey(name),
-        reviews(rating)
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+      const { data: favorites } = await supabase
+        .from('favorites')
+        .select(`recipes(*, users!recipes_author_id_fkey(name), reviews(rating))`)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+      setFavoriteRecipes(favorites || [])
+      setLoading(false)
+    }
+    fetchData()
+  }, [user, supabase, router])
 
-  // Process recipes with ratings
   const processRecipesWithRatings = (recipes: any[]) => {
     return recipes?.map(recipe => {
       const recipeData = recipe.recipes || recipe
@@ -52,7 +54,6 @@ export default async function ProfilePage() {
       const avgRating = ratings.length > 0 
         ? ratings.reduce((sum: number, rating: number) => sum + rating, 0) / ratings.length 
         : 0
-      
       return {
         ...recipeData,
         avgRating: Math.round(avgRating * 10) / 10,
@@ -63,6 +64,10 @@ export default async function ProfilePage() {
 
   const processedSubmittedRecipes = processRecipesWithRatings(submittedRecipes || [])
   const processedFavoriteRecipes = processRecipesWithRatings(favoriteRecipes || [])
+
+  if (loading) {
+    return <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">Loading...</div>
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -76,7 +81,7 @@ export default async function ProfilePage() {
             <h1 className="text-2xl font-bold text-gray-900">
               {profile?.name || 'Anonymous Chef'}
             </h1>
-            <p className="text-gray-600">{user.email}</p>
+            <p className="text-gray-600">{user?.email ?? ''}</p>
           </div>
         </div>
         
