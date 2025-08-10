@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabaseServer'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -7,7 +8,8 @@ import { FavoriteButton } from '@/components/FavoriteButton'
 import { ReviewSection } from '@/components/ReviewSection'
 
 export default async function RecipePage({ params }: { params: { id: string } }) {
-  const supabase = createServerSupabaseClient()
+  const supabase = supabaseAdmin
+  console.log('Fetching recipe:', params.id)
   
   // Fetch recipe with all related data
   const { data: recipe, error } = await supabase
@@ -22,9 +24,17 @@ export default async function RecipePage({ params }: { params: { id: string } })
     .eq('id', params.id)
     .single()
 
-  if (error || !recipe) {
+  if (error) {
+    console.error('Error fetching recipe:', error)
     notFound()
   }
+
+  if (!recipe) {
+    console.error('Recipe not found:', params.id)
+    notFound()
+  }
+
+  console.log('Found recipe:', recipe)
 
   // Sort ingredients and steps by order
   // const sortedIngredients = recipe.ingredients?.sort((a, b) => a.order_index - b.order_index) || []

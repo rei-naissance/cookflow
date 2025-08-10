@@ -45,4 +45,8 @@ body {
   .input-field {
     @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900;
   }
+
+  .animate-grace-progress {
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
 }
