@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search, Filter } from 'lucide-react'
+import { Search, Filter, X } from 'lucide-react'
 
 const categories = [
   'All', 'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Snack', 'Appetizer', 'Vegan', 'Vegetarian'
@@ -38,7 +38,7 @@ export function SearchAndFilters() {
       params.delete(key)
     }
 
-    router.push(`/?${params.toString()}`)
+    router.replace(`/?${params.toString()}`, { scroll: false })
   }
 
   // Debounce search input
@@ -53,46 +53,42 @@ export function SearchAndFilters() {
   }, [searchTerm])
 
   return (
-    <div className="mb-8">
+    <div className="mb-8 w-full max-w-4xl mx-auto">
       {/* Search Bar */}
-      <div className="mb-6">
-        <div className="relative max-w-md mx-auto">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900" size={20} />
+      <div className="mb-6 flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
           <input
             type="text"
             name="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search recipes..."
-            className="w-full pl-10 pr-4 py-3 text-gray-900 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="Search for recipes..."
+            className="w-full pl-12 pr-4 py-3 h-12 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground shadow-sm transition-all"
           />
         </div>
-      </div>
-
-      {/* Filter Toggle */}
-      <div className="text-center mb-4">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="inline-flex items-center space-x-2 px-4 py-2 bg-primary-100 hover:bg-primary-200 text-primary-700 rounded-lg transition-colors"
+          className={`inline-flex items-center justify-center h-12 px-5 rounded-xl transition-colors border ${showFilters ? 'bg-primary text-primary-foreground border-primary' : 'bg-card text-foreground border-border hover:bg-muted'}`}
         >
-          <Filter size={18} />
-          <span>Filters</span>
+          {showFilters ? <X size={20} /> : <Filter size={20} />}
+          <span className="ml-2 hidden sm:inline">Filters</span>
         </button>
       </div>
 
       {/* Filters */}
       {showFilters && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6 animate-slide-up">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
                 Category
               </label>
               <select
                 value={currentCategory}
                 onChange={(e) => updateSearchParams('category', e.target.value)}
-                className="w-full input-field"
+                className="w-full input-field bg-background text-foreground"
               >
                 {categories.map((category) => (
                   <option key={category} value={category}>
@@ -103,14 +99,14 @@ export function SearchAndFilters() {
             </div>
 
             {/* Difficulty Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
                 Difficulty
               </label>
               <select
                 value={currentDifficulty}
                 onChange={(e) => updateSearchParams('difficulty', e.target.value)}
-                className="w-full input-field"
+                className="w-full input-field bg-background text-foreground"
               >
                 {difficulties.map((difficulty) => (
                   <option key={difficulty} value={difficulty}>
@@ -121,14 +117,14 @@ export function SearchAndFilters() {
             </div>
 
             {/* Time Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
                 Max Time
               </label>
               <select
                 value={currentTime}
                 onChange={(e) => updateSearchParams('time', e.target.value)}
-                className="w-full input-field"
+                className="w-full input-field bg-background text-foreground"
               >
                 {timeOptions.map((option) => (
                   <option key={option.value} value={option.value}>

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import { RecipeGrid } from '@/components/RecipeGrid'
-import { User, Heart, ChefHat } from 'lucide-react'
+import { User, Heart, ChefHat, Camera, X, Loader2, Plus } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -22,7 +22,6 @@ export default function ProfilePage() {
   const [editError, setEditError] = useState('')
 
   useEffect(() => {
-    // If user logs out, reset profile state and redirect to login
     if (!user) {
       setProfile(null)
       setSubmittedRecipes([])
@@ -35,7 +34,6 @@ export default function ProfilePage() {
       router.push('/login')
       return
     }
-    // If user is logged in, fetch profile and recipes
     const fetchData = async () => {
       setLoading(true)
       const { data: profileData } = await supabase
@@ -71,8 +69,8 @@ export default function ProfilePage() {
     return recipes?.map(recipe => {
       const recipeData = recipe.recipes || recipe
       const ratings = recipeData.reviews?.map((r: any) => r.rating) || []
-      const avgRating = ratings.length > 0 
-        ? ratings.reduce((sum: number, rating: number) => sum + rating, 0) / ratings.length 
+      const avgRating = ratings.length > 0
+        ? ratings.reduce((sum: number, rating: number) => sum + rating, 0) / ratings.length
         : 0
       return {
         ...recipeData,
@@ -86,63 +84,148 @@ export default function ProfilePage() {
   const processedFavoriteRecipes = processRecipesWithRatings(favoriteRecipes || [])
 
   if (loading) {
-    return <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">Loading...</div>
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Profile Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-        <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden bg-primary-100">
-            {profile?.avatar_url ? (
-              <img
-                src={profile.avatar_url}
-                alt="Profile Avatar"
-                className="w-16 h-16 object-cover rounded-full border"
-              />
+    <div className="min-h-screen bg-background py-12 animate-page-enter">
+      <div className="container max-w-5xl px-4 md:px-6 mx-auto space-y-12">
+        {/* Profile Header */}
+        <div className="bg-card border border-border rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden">
+          {/* Decorative background gradient */}
+          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent"></div>
+
+          <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 pt-4">
+            {/* Avatar */}
+            <div className="relative group">
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-card bg-muted flex items-center justify-center overflow-hidden shadow-xl">
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt="Profile Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User size={48} className="text-muted-foreground" />
+                )}
+              </div>
+              <button
+                onClick={() => setEditOpen(true)}
+                className="absolute bottom-0 right-0 p-2 bg-primary text-primary-foreground rounded-full shadow-lg hover:scale-110 transition-transform"
+                title="Edit Profile"
+              >
+                <Camera size={16} />
+              </button>
+            </div>
+
+            {/* User Info */}
+            <div className="flex-1 text-center md:text-left space-y-2 mb-2">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                {profile?.name || 'Anonymous Chef'}
+              </h1>
+              <p className="text-muted-foreground text-lg">{user?.email ?? ''}</p>
+            </div>
+
+            {/* Stats */}
+            <div className="flex gap-8 bg-background/50 backdrop-blur-sm p-4 rounded-2xl border border-border/50">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">
+                  {processedSubmittedRecipes.length}
+                </div>
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Recipes</div>
+              </div>
+              <div className="w-px bg-border"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-500">
+                  {processedFavoriteRecipes.length}
+                </div>
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Favorites</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Tabs/Sections */}
+        <div className="space-y-16">
+          {/* Submitted Recipes */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 border-b border-border pb-4">
+              <div className="p-2 bg-primary/10 rounded-xl text-primary">
+                <ChefHat size={24} />
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight">Your Recipes</h2>
+            </div>
+
+            {processedSubmittedRecipes.length > 0 ? (
+              <RecipeGrid recipes={processedSubmittedRecipes} />
             ) : (
-              <User size={32} className="text-primary-600" />
+              <div className="text-center py-16 bg-muted/30 rounded-3xl border border-dashed border-border">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ChefHat size={32} className="text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No recipes yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                  Share your culinary masterpieces with the community.
+                </p>
+                <a
+                  href="/submit"
+                  className="inline-flex items-center gap-2 btn-primary px-6 py-2.5 rounded-full"
+                >
+                  <Plus size={18} />
+                  <span>Submit Recipe</span>
+                </a>
+              </div>
             )}
           </div>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {profile?.name || 'Anonymous Chef'}
-            </h1>
-            <p className="text-gray-600">{user?.email ?? ''}</p>
-          </div>
-          <div className="flex-shrink-0 flex items-center">
-            <button
-              className="px-3 py-1 rounded bg-primary-100 text-primary-700 text-sm font-medium border border-primary-600 hover:bg-primary-200 hover:text-primary-900"
-              onClick={() => setEditOpen(true)}
-            >Edit Profile</button>
+
+          {/* Favorite Recipes */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 border-b border-border pb-4">
+              <div className="p-2 bg-red-500/10 rounded-xl text-red-500">
+                <Heart size={24} />
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight">Your Favorites</h2>
+            </div>
+
+            {processedFavoriteRecipes.length > 0 ? (
+              <RecipeGrid recipes={processedFavoriteRecipes} />
+            ) : (
+              <div className="text-center py-16 bg-muted/30 rounded-3xl border border-dashed border-border">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Heart size={32} className="text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No favorites yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                  Save recipes you love to find them easily later.
+                </p>
+                <a
+                  href="/"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 font-medium transition-colors"
+                >
+                  <span>Browse Recipes</span>
+                </a>
+              </div>
+            )}
           </div>
         </div>
-        <div className="mt-6 flex space-x-8">
-          <div className="flex flex-1 justify-center items-center gap-16">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary-600">
-                {processedSubmittedRecipes.length}
-              </div>
-              <div className="text-sm text-gray-600">Recipes Shared</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-500">
-                {processedFavoriteRecipes.length}
-              </div>
-              <div className="text-sm text-gray-600">Favorites</div>
-            </div>
-          </div>
-        </div>
+
         {/* Edit Profile Modal */}
         {editOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border p-6 relative animate-in zoom-in-95 duration-200">
               <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors"
                 onClick={() => setEditOpen(false)}
-              >✕</button>
-              <h2 className="text-xl font-bold mb-4 text-gray-600">Edit Profile</h2>
+              >
+                <X size={20} />
+              </button>
+
+              <h2 className="text-2xl font-bold mb-6">Edit Profile</h2>
+
               <form
                 onSubmit={async e => {
                   e.preventDefault()
@@ -179,120 +262,73 @@ export default function ProfilePage() {
                   }
                   setEditLoading(false)
                 }}
+                className="space-y-6"
               >
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
+                <div className="flex justify-center">
+                  <div className="relative group">
+                    <div className="w-24 h-24 rounded-full border-4 border-background bg-muted flex items-center justify-center overflow-hidden">
+                      {editAvatarPreview ? (
+                        <img src={editAvatarPreview} alt="Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <User size={32} className="text-muted-foreground" />
+                      )}
+                    </div>
+                    <label
+                      htmlFor="edit-avatar"
+                      className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full"
+                    >
+                      <Camera size={24} />
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="edit-avatar"
+                      className="hidden"
+                      onChange={e => {
+                        const file = e.target.files?.[0] || null
+                        setEditAvatarFile(file)
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onload = () => setEditAvatarPreview(reader.result as string)
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Display Name
+                  </label>
                   <input
                     type="text"
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                 </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
-                  <div className="flex items-center space-x-4">
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        id="edit-avatar"
-                        style={{ display: 'none' }}
-                        onChange={e => {
-                          const file = e.target.files?.[0] || null
-                          setEditAvatarFile(file)
-                          if (file) {
-                            const reader = new FileReader()
-                            reader.onload = () => setEditAvatarPreview(reader.result as string)
-                            reader.readAsDataURL(file)
-                          } else {
-                            setEditAvatarPreview(profile?.avatar_url || null)
-                          }
-                        }}
-                      />
-                      <label htmlFor="edit-avatar" className="cursor-pointer inline-block">
-                        <div className="w-20 h-20 rounded-full border flex items-center justify-center bg-gray-100 hover:bg-gray-200">
-                          {editAvatarPreview ? (
-                            <img src={editAvatarPreview} alt="Avatar Preview" className="w-20 h-20 rounded-full object-cover" />
-                          ) : (
-                            <span className="flex items-center justify-center w-full h-full text-center text-gray-400">Choose Image</span>
-                          )}
-                        </div>
-                      </label>
-                    </div>
-                    {editAvatarPreview && (
-                      <button
-                        type="button"
-                        className="text-xs text-red-500 hover:underline"
-                        onClick={() => {
-                          setEditAvatarFile(null)
-                          setEditAvatarPreview(null)
-                        }}
-                      >Remove</button>
-                    )}
-                  </div>
-                </div>
+
                 {editError && (
-                  <div className="text-red-600 text-sm mb-2">{editError}</div>
+                  <div className="p-3 text-sm text-red-500 bg-red-500/10 rounded-md border border-red-500/20">
+                    {editError}
+                  </div>
                 )}
+
                 <button
                   type="submit"
                   disabled={editLoading}
-                  className="w-full py-2 px-4 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
                 >
-                  {editLoading ? 'Saving...' : 'Save Changes'}
+                  {editLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : 'Save Changes'}
                 </button>
               </form>
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* Submitted Recipes */}
-      <div className="mb-12">
-        <div className="flex items-center space-x-2 mb-6">
-          <ChefHat size={24} className="text-primary-600" />
-          <h2 className="text-2xl font-semibold text-gray-900">Your Recipes</h2>
-        </div>
-        
-        {processedSubmittedRecipes.length > 0 ? (
-          <RecipeGrid recipes={processedSubmittedRecipes} />
-        ) : (
-          <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-            <ChefHat size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No recipes yet</h3>
-            <p className="text-gray-600 mb-4">Share your first recipe with the community!</p>
-            <a
-              href="/submit"
-              className="inline-flex items-center space-x-2 btn-primary"
-            >
-              <ChefHat size={16} />
-              <span>Submit Recipe</span>
-            </a>
-          </div>
-        )}
-      </div>
-
-      {/* Favorite Recipes */}
-      <div>
-        <div className="flex items-center space-x-2 mb-6">
-          <Heart size={24} className="text-red-500" />
-          <h2 className="text-2xl font-semibold text-gray-900">Your Favorites</h2>
-        </div>
-        
-        {processedFavoriteRecipes.length > 0 ? (
-          <RecipeGrid recipes={processedFavoriteRecipes} />
-        ) : (
-          <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-            <Heart size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No favorites yet</h3>
-            <p className="text-gray-600 mb-4">Start exploring recipes and save your favorites!</p>
-            <a
-              href="/"
-              className="inline-flex items-center space-x-2 btn-primary"
-            >
-              <span>Browse Recipes</span>
-            </a>
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ import { CookingPlayer } from '@/components/CookingPlayer'
 
 export default async function CookPage({ params }: { params: { id: string } }) {
   const supabase = createServerSupabaseClient()
-  
+
   // Fetch recipe with steps and ingredients
   const { data: recipe, error } = await supabase
     .from('recipes')
@@ -31,15 +31,15 @@ export default async function CookPage({ params }: { params: { id: string } }) {
   const sortedIngredients = Array.isArray(recipe.ingredients)
     ? [...recipe.ingredients].sort((a, b) => a.order_index - b.order_index)
     : []
-  
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <CookingPlayer 
+    <div className="min-h-screen bg-background">
+      <CookingPlayer
         recipe={{
           ...recipe,
           steps: sortedSteps,
           ingredients: sortedIngredients
-        }} 
+        }}
       />
     </div>
   )

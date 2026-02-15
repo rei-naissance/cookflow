@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   description: 'Follow recipes step-by-step with timers, submit your own recipes, and discover new favorites.',
 }
 
+import { NavbarWrapper } from '@/components/NavbarWrapper'
+
+// ... (other imports)
+
 export default function RootLayout({
   children,
 }: {
@@ -21,8 +25,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main className="pb-8">
+            <NavbarWrapper />
+            <main>
               {children}
             </main>
           </div>

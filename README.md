@@ -1,223 +1,158 @@
-# 🍳 CookFlow - Interactive Recipe Web App
+# CookFlow
 
-CookFlow is a full-stack interactive recipe web application that allows users to follow recipes step-by-step with built-in timers, submit their own recipes, leave reviews, and save favorites. Built with Next.js, React, Tailwind CSS, and Supabase.
+**A Modern Interactive Recipe & Cooking Companion Web Application**
 
-## ✨ Features
+![Status](https://img.shields.io/badge/Status-Active_Development-success)
+![Framework](https://img.shields.io/badge/Framework-Next.js_14-black)
+![Language](https://img.shields.io/badge/Language-TypeScript-blue)
+![Styling](https://img.shields.io/badge/Styling-Tailwind_CSS-38bdf8)
+![Database](https://img.shields.io/badge/Database-Supabase-3ecf8e)
+![AI](https://img.shields.io/badge/AI-Groq_SDK-orange)
 
-### 🧭 Interactive Step-by-Step Recipe Player
-- Follow recipes one step at a time with large, readable instructions
-- Built-in timers for time-sensitive steps
-- **Auto-advance**: Automatically moves to the next step when timers finish
-- Visual progress tracking with step counter
-- Navigation between steps with Back/Next buttons
+CookFlow is a full-stack, feature-rich recipe platform designed to transform the cooking experience. From smart recipe discovery to an interactive step-by-step cooking player with voice guidance, CookFlow empowers home cooks to discover, create, and master delicious meals.
 
-### 🔍 Recipe Discovery & Browsing
-- Homepage with searchable recipe cards
-- Advanced filtering by category, difficulty, and cooking time
-- Recipe detail pages with ingredients, instructions, and ratings
-- Beautiful, responsive design with recipe images
+Built with performance, accessibility, and modern design principles in mind using the latest web technologies.
 
-### ⭐ Reviews & Ratings System
-- Authenticated users can rate recipes (1-5 stars)
-- Leave detailed reviews and comments
-- View average ratings and all user reviews
-- One review per user per recipe
+---
 
-### 👨‍🍳 User-Generated Content
-- Submit your own recipes with detailed forms
-- Upload recipe images to Supabase Storage
-- Add ingredients and step-by-step instructions
-- Set optional timers for cooking steps
-- Categorize recipes by type and difficulty
+## Key Features
 
-### ❤️ Personal Recipe Management
-- Save any recipe to your favorites
-- User profile showing submitted recipes and favorites
-- Track your cooking contributions to the community
+### Interactive Cooking Player
+Transform your device into a cooking assistant.
+- **Step-by-Step Guidance**: Focus on one instruction at a time with large, readable text.
+- **Voice Guidance (TTS)**: Listen to cooking steps hands-free, powered by **Groq SDK** and PlayAI text-to-speech.
+- **Smart Timers**: Integrated timers for time-sensitive steps that auto-advance the recipe upon completion.
+- **Progress Tracking**: Visual indicators show exactly where you are in the cooking process.
+- **Ingredients Sidebar**: Keep track of required items without leaving the current instruction.
 
-### 🔐 Authentication & User Profiles
-- Email/password authentication via Supabase Auth
-- Secure user profiles with Row Level Security (RLS)
-- Guest browsing with full authentication for interactions
+### Smart Discovery & Browsing
+Find your next favorite meal effortlessly.
+- **Advanced Search**: Real-time search by recipe title.
+- **Curated Collections**: Browse "Championship Recipes", "Fast and Furious" quick meals, and more.
+- **Rich Filtering**: Filter by category, difficulty level, dietary tags, and cooking time.
+- **Responsive Design**: A fluid grid layout that looks stunning on mobile, tablet, and desktop.
 
-## 🛠️ Tech Stack
+### User-Generated Content
+Share your culinary creations with the world.
+- **Comprehensive Editor**: easy-to-use form for contributing your own recipes.
+- **Multimedia Support**: Upload high-quality recipe images (stored via Supabase Storage).
+- **Structured Data**: Input detailed ingredients, ordered steps, and metadata (prep time, cook time, servings).
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS with custom components
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: Supabase Auth
-- **Storage**: Supabase Storage for recipe images
-- **Icons**: Lucide React
-- **Deployment**: Ready for Vercel/Netlify
+### Modern Tech Stack & Architecture
+- **Authentication**: Secure email/password login and user management via **Supabase Auth**.
+- **Database**: Robust PostgreSQL database with Row Level Security (RLS) for data protection.
+- **Performance**: Server-side rendering (SSR) and static generation for lightning-fast page loads.
+- **AI Integration**: Text-to-Speech capabilities for accessible cooking instructions.
 
-## 🚀 Quick Start
+---
+
+## Technology Stack
+
+| Category | Technology | Description |
+|----------|------------|-------------|
+| **Frontend** | [Next.js 14](https://nextjs.org/) | App Router, Server Components, SSR |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) | Type-safe development |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework |
+| **UI Components** | [Lucide React](https://lucide.dev/) | Beautiful, consistent iconography |
+| **Backend/DB** | [Supabase](https://supabase.com/) | PostgreSQL, Auth, Storage, Realtime |
+| **AI/ML** | [Groq SDK](https://groq.com/) | Fast AI inference for Text-to-Speech features |
+| **Deployment** | Vercel | Optimized edge deployment |
+
+---
+
+## Getting Started
+
+Follow these instructions to set up the project locally.
 
 ### Prerequisites
+- **Node.js**: v18.17.0 or higher
+- **npm**: v9.0.0 or higher
+- **Supabase Account**: For database and auth
+- **Groq API Key**: For TTS features
 
-- Node.js 18+ and npm
-- A Supabase account and project
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/cookflow.git
+cd cookflow
+```
 
-### 1. Clone and Install
+### 2. Install Dependencies
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+### 3. Environment Setup
+Create a `.env.local` file in the root directory and add the following variables:
 
 ```bash
-git clone <your-repo-url>
-cd cookflow
-npm install
+# Supabase Configuration (Required)
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Groq AI Configuration (Required for TTS)
+GROQ_API_KEY=your_groq_api_key
 ```
 
-### 2. Set up Supabase
+### 4. Database Setup
+1. Log in to your [Supabase Dashboard](https://supabase.com/dashboard).
+2. Navigate to the **SQL Editor**.
+3. Open the `supabase-schema.sql` file from this project.
+4. Copy its contents and run it in the SQL Editor to create tables, policies, and storage buckets.
 
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to Settings > API to get your project URL and anon key
-3. Copy `.env.local.example` to `.env.local` and fill in your Supabase credentials:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-```
-
-### 3. Set up Database
-
-1. In your Supabase dashboard, go to the SQL Editor
-2. Copy and paste the contents of `supabase-schema.sql`
-3. Run the SQL to create all tables, policies, and storage buckets
-
-### 4. Run the Development Server
-
+### 5. Run the Local Server
 ```bash
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) to see CookFlow in action!
+---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 cookflow/
-├── app/                    # Next.js 13+ app directory
-│   ├── cook/[id]/         # Interactive cooking player
-│   ├── login/             # Authentication page
-│   ├── profile/           # User profile and favorites
-│   ├── recipe/[id]/       # Recipe detail pages
-│   ├── submit/            # Recipe submission form
-│   ├── globals.css        # Global styles and Tailwind
-│   ├── layout.tsx         # Root layout with auth provider
-│   └── page.tsx           # Homepage with recipe browsing
-├── components/            # Reusable React components
-│   ├── AuthProvider.tsx   # Authentication context
-│   ├── CookingPlayer.tsx  # Step-by-step cooking interface
-│   ├── FavoriteButton.tsx # Recipe favoriting functionality
-│   ├── Navbar.tsx         # Navigation component
-│   ├── RecipeGrid.tsx     # Recipe card grid display
-│   ├── ReviewSection.tsx  # Reviews and ratings
-│   └── SearchAndFilters.tsx # Homepage search/filter
-├── lib/
-│   └── supabase.ts        # Supabase client configuration
-├── supabase-schema.sql    # Database schema and RLS policies
-└── README.md              # This file
+├── app/                    # Next.js 14 App Router
+│   ├── api/                # API Routes (e.g., TTS)
+│   ├── cook/[id]/          # Interactive cooking player page
+│   ├── login/              # Authentication pages
+│   ├── profile/            # User dashboard
+│   ├── recipe/[id]/        # Recipe details page
+│   ├── submit/             # Recipe submission page
+│   └── page.tsx            # Landing page
+├── components/             # React Components
+│   ├── landing/            # Landing page specific components
+│   ├── ui/                 # Reusable UI elements
+│   ├── CookingPlayer.tsx   # Core cooking logic
+│   └── ...
+├── lib/                    # Utilities and clients (Supabase, etc.)
+├── public/                 # Static assets
+└── supabase-schema.sql     # Database definition
 ```
-
-## 🗄️ Database Schema
-
-The app uses 6 main tables:
-
-- **users**: Extended user profiles (linked to Supabase Auth)
-- **recipes**: Recipe metadata (title, category, difficulty, times)
-- **ingredients**: Recipe ingredients with ordering
-- **steps**: Step-by-step instructions with optional timers
-- **favorites**: User's saved favorite recipes
-- **reviews**: User ratings and comments
-
-All tables include Row Level Security (RLS) policies for secure data access.
-
-## 🎯 Key Features Explained
-
-### Interactive Cooking Player
-
-The cooking player (`/cook/[id]`) is the heart of CookFlow:
-
-- **Step-by-step guidance**: Shows one instruction at a time
-- **Built-in timers**: Visual countdown with audio notification
-- **Auto-advance**: Automatically moves to next step when timer completes
-- **Progress tracking**: Visual progress bar and step overview
-- **Ingredient sidebar**: Always-visible ingredient list
-
-### Smart Recipe Discovery
-
-The homepage provides powerful recipe discovery:
-
-- **Real-time search**: Filter recipes by title
-- **Multi-faceted filtering**: Category, difficulty, and time filters
-- **Rating display**: Shows average ratings and review counts
-- **Responsive grid**: Beautiful card layout on all devices
-
-### User-Generated Content
-
-Users can contribute recipes through a comprehensive submission form:
-
-- **Rich recipe editor**: Add ingredients and steps dynamically
-- **Timer integration**: Set cooking timers for specific steps
-- **Image upload**: Upload recipe photos to Supabase Storage
-- **Categorization**: Organize recipes by type and difficulty
-
-## 🔧 Configuration
-
-### Environment Variables
-
-```env
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-```
-
-### Supabase Storage
-
-The app uses a `recipe-images` storage bucket for user-uploaded recipe photos. The bucket is configured for:
-
-- Public read access for all images
-- Authenticated write access for uploads
-- User-specific folders for organization
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Connect your repo to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy!
-
-### Other Platforms
-
-CookFlow works on any platform that supports Next.js:
-
-- Netlify
-- Railway
-- DigitalOcean App Platform
-- AWS Amplify
-
-## 🤝 Contributing
-
-We welcome contributions! Here are some ways to help:
-
-- 🐛 Report bugs and issues
-- 💡 Suggest new features
-- 🔧 Submit pull requests
-- 📖 Improve documentation
-- 🎨 Enhance UI/UX design
-
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-- Built with [Next.js](https://nextjs.org/)
-- Database and auth by [Supabase](https://supabase.com/)
-- Styled with [Tailwind CSS](https://tailwindcss.com/)
-- Icons by [Lucide](https://lucide.dev/)
 
 ---
-Have fun y'all :P
+
+## Contributing
+
+Contributions make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+<p align="center">
+  Built with ❤️ by yours truly
+</p>
