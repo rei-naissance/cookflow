@@ -31,7 +31,7 @@ export function Navbar() {
                   <Plus size={18} />
                   <span>Submit Recipe</span>
                 </Link>
-                <Link href="/profile" className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/favorites" className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                   <Heart size={18} />
                   <span>Favorites</span>
                 </Link>
@@ -76,7 +76,7 @@ export function Navbar() {
               <Plus size={18} />
               <span>Submit Recipe</span>
             </Link>
-            <Link href="/profile" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/favorites" className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               <Heart size={18} />
               <span>Favorites</span>
             </Link>

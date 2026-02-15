@@ -182,35 +182,7 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* Favorite Recipes */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 border-b border-border pb-4">
-              <div className="p-2 bg-red-500/10 rounded-xl text-red-500">
-                <Heart size={24} />
-              </div>
-              <h2 className="text-2xl font-bold tracking-tight">Your Favorites</h2>
-            </div>
-
-            {processedFavoriteRecipes.length > 0 ? (
-              <RecipeGrid recipes={processedFavoriteRecipes} />
-            ) : (
-              <div className="text-center py-16 bg-muted/30 rounded-3xl border border-dashed border-border">
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Heart size={32} className="text-muted-foreground" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">No favorites yet</h3>
-                <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                  Save recipes you love to find them easily later.
-                </p>
-                <a
-                  href="/"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 font-medium transition-colors"
-                >
-                  <span>Browse Recipes</span>
-                </a>
-              </div>
-            )}
-          </div>
+          {/* Favorite Recipes section removed */}
         </div>
 
         {/* Edit Profile Modal */}

@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: 'Follow recipes step-by-step with timers, submit your own recipes, and discover new favorites.',
 }
 
+import { PagePreloader } from '@/components/PagePreloader'
+
 import { NavbarWrapper } from '@/components/NavbarWrapper'
 
 // ... (other imports)
@@ -24,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
+          <PagePreloader />
           <div className="min-h-screen bg-gray-50">
             <NavbarWrapper />
             <main>
