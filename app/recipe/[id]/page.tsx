@@ -10,7 +10,7 @@ import { ReviewSection } from '@/components/ReviewSection'
 export default async function RecipePage({ params }: { params: { id: string } }) {
   const supabase = supabaseAdmin
   console.log('Fetching recipe:', params.id)
-  
+
   // Fetch recipe with all related data
   const { data: recipe, error } = await supabase
     .from('recipes')
@@ -51,8 +51,8 @@ export default async function RecipePage({ params }: { params: { id: string } })
 
   // Calculate average rating
   const ratings = recipe.reviews?.map((r: any) => r.rating) || []
-  const avgRating = ratings.length > 0 
-    ? ratings.reduce((sum: number, rating: number) => sum + rating, 0) / ratings.length 
+  const avgRating = ratings.length > 0
+    ? ratings.reduce((sum: number, rating: number) => sum + rating, 0) / ratings.length
     : 0
 
   const totalTime = recipe.prep_time + recipe.cook_time
@@ -70,27 +70,24 @@ export default async function RecipePage({ params }: { params: { id: string } })
           <h1 className="text-3xl font-bold text-gray-900">{recipe.title}</h1>
           <FavoriteButton recipeId={recipe.id} />
         </div>
-        
-        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+
+
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 text-sm text-gray-600 mb-4">
           <div className="flex items-center space-x-1">
             <Users size={16} />
             <span>by {recipe.users?.name || 'Anonymous'}</span>
           </div>
-          
+
           <div className="flex items-center space-x-1">
             <Clock size={16} />
             <span>{totalTime} minutes</span>
           </div>
-          
-          {/* <span className={`px-2 py-1 rounded-full text-xs font-medium ${difficultyColors[recipe.difficulty]}`}>
-            {recipe.difficulty}
-          </span> */}
 
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${difficultyColors[recipe.difficulty as keyof typeof difficultyColors]}`}>
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${difficultyColors[recipe.difficulty as keyof typeof difficultyColors]}`}>
             {recipe.difficulty}
           </span>
-          
-          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">
+
+          <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium">
             {recipe.category}
           </span>
         </div>
@@ -103,11 +100,10 @@ export default async function RecipePage({ params }: { params: { id: string } })
                 <Star
                   key={star}
                   size={20}
-                  className={`${
-                    star <= avgRating
+                  className={`${star <= avgRating
                       ? 'text-yellow-400 fill-current'
                       : 'text-gray-300'
-                  }`}
+                    }`}
                 />
               ))}
             </div>

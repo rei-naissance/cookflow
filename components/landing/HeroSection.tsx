@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Star, Heart, Clock, Loader2 } from 'lucide-react'
+import { ArrowRight, Star, Heart, Clock, Loader2, ArrowDown } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 interface Recipe {
@@ -54,7 +54,7 @@ export function HeroSection({ recipes = [] }: HeroSectionProps) {
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
           <div className="flex flex-col justify-center space-y-8">
             <div className="space-y-4">
-              <span className="inline-block rounded-full bg-accent/10 px-3 py-1 text-sm font-medium text-accent">
+              <span className="inline-block rounded-full bg-accent/10 px-4 py-1 text-sm font-medium text-accent">
                 Trending Recipes
               </span>
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
@@ -112,10 +112,10 @@ export function HeroSection({ recipes = [] }: HeroSectionProps) {
                     <div className="flex justify-between items-end mb-6">
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-medium backdrop-blur-sm border border-white/10">
+                          <span className="px-3 py-1 rounded-full bg-white/20 text-xs font-medium backdrop-blur-sm border border-white/10">
                             {currentRecipe.category || 'Uncategorized'}
                           </span>
-                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm border border-white/10 ${currentRecipe.difficulty === 'Easy' ? 'bg-green-500/20 text-green-100' :
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm border border-white/10 ${currentRecipe.difficulty === 'Easy' ? 'bg-green-500/20 text-green-100' :
                             currentRecipe.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-100' :
                               'bg-red-500/20 text-red-100'
                             }`}>
@@ -180,6 +180,15 @@ export function HeroSection({ recipes = [] }: HeroSectionProps) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Bouncing Arrow */}
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-20 pb-4">
+        <Link href="#recipes">
+          <div className="p-3 rounded-full bg-white/80 backdrop-blur-md border border-black/10 shadow-sm hover:bg-white transition-colors">
+            <ArrowDown className="w-6 h-6 text-black" />
+          </div>
+        </Link>
       </div>
     </section>
   )
