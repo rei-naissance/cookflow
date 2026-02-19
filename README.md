@@ -30,19 +30,23 @@ Find your next favorite meal effortlessly.
 - **Advanced Search**: Real-time search by recipe title.
 - **Curated Collections**: Browse "Championship Recipes", "Fast and Furious" quick meals, and more.
 - **Rich Filtering**: Filter by category, difficulty level, dietary tags, and cooking time.
+- **Smooth Animations**: Powered by **Framer Motion** for a fluid and premium user experience.
 - **Responsive Design**: A fluid grid layout that looks stunning on mobile, tablet, and desktop.
 
 ### User-Generated Content
 Share your culinary creations with the world.
-- **Comprehensive Editor**: easy-to-use form for contributing your own recipes.
+- **Comprehensive Editor**: Easy-to-use form for contributing your own recipes.
 - **Multimedia Support**: Upload high-quality recipe images (stored via Supabase Storage).
 - **Structured Data**: Input detailed ingredients, ordered steps, and metadata (prep time, cook time, servings).
 
-### Modern Tech Stack & Architecture
-- **Authentication**: Secure email/password login and user management via **Supabase Auth**.
-- **Database**: Robust PostgreSQL database with Row Level Security (RLS) for data protection.
-- **Performance**: Server-side rendering (SSR) and static generation for lightning-fast page loads.
-- **AI Integration**: Text-to-Speech capabilities for accessible cooking instructions.
+### Authentication & Security
+- **Secure Auth**: Email/password login and user management via **Supabase Auth**.
+- **Password Recovery**: Integrated "Forgot Password" flow with email verification.
+- **Profile Management**: Customize your profile and manage your account settings.
+
+### Email Integration
+- **Newsletter**: Subscribe to "Fresh Inspiration" for weekly recipe updates.
+- **Transactional Emails**: Automated emails for email verification and password resets using **Nodemailer**.
 
 ---
 
@@ -53,8 +57,10 @@ Share your culinary creations with the world.
 | **Frontend** | [Next.js 14](https://nextjs.org/) | App Router, Server Components, SSR |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) | Type-safe development |
 | **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework |
+| **Animation** | [Framer Motion](https://www.framer.com/motion/) | Production-ready animation library |
 | **UI Components** | [Lucide React](https://lucide.dev/) | Beautiful, consistent iconography |
 | **Backend/DB** | [Supabase](https://supabase.com/) | PostgreSQL, Auth, Storage, Realtime |
+| **Email** | [Nodemailer](https://nodemailer.com/) | Robust email sending service |
 | **AI/ML** | [Groq SDK](https://groq.com/) | Fast AI inference for Text-to-Speech features |
 | **Deployment** | Vercel | Optimized edge deployment |
 
@@ -96,6 +102,13 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 # Groq AI Configuration (Required for TTS)
 GROQ_API_KEY=your_groq_api_key
+
+# SMTP Configuration (Required for Emails)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your_email@example.com
+SMTP_PASS=your_password
+SMTP_FROM="CookFlow <no-reply@cookflow.com>"
 ```
 
 ### 4. Database Setup
@@ -117,19 +130,27 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ```
 cookflow/
 ├── app/                    # Next.js 14 App Router
-│   ├── api/                # API Routes (e.g., TTS)
+│   ├── api/                # API Routes (TTS, Newsletter, etc.)
+│   ├── auth/               # Auth callback handlers
 │   ├── cook/[id]/          # Interactive cooking player page
+│   ├── favorites/          # User favorites page
+│   ├── forgot-password/    # Password recovery flow
 │   ├── login/              # Authentication pages
 │   ├── profile/            # User dashboard
 │   ├── recipe/[id]/        # Recipe details page
 │   ├── submit/             # Recipe submission page
+│   ├── update-password/    # Password update page
+│   ├── verify-email/       # Email verification page
 │   └── page.tsx            # Landing page
 ├── components/             # React Components
 │   ├── landing/            # Landing page specific components
 │   ├── ui/                 # Reusable UI elements
 │   ├── CookingPlayer.tsx   # Core cooking logic
 │   └── ...
-├── lib/                    # Utilities and clients (Supabase, etc.)
+├── lib/                    # Utilities and clients
+│   ├── email.ts            # Email sending utility
+│   ├── supabaseClient.ts   # Supabase client
+│   └── ...
 ├── public/                 # Static assets
 └── supabase-schema.sql     # Database definition
 ```
@@ -149,10 +170,11 @@ Contributions make the open-source community an amazing place to learn, inspire,
 ---
 
 ## License
+
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
 <p align="center">
-  Built with ❤️ by yours truly
+  xoxo, rei.
 </p>
