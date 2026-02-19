@@ -43,6 +43,8 @@ export function HeroSection({ recipes = [] }: HeroSectionProps) {
 
   const currentRecipe = recipes[currentIndex]
 
+  if (!currentRecipe) return null
+
   // Image fallback if no image_url provided
   const bgImage = currentRecipe.image_url
     ? `url('${currentRecipe.image_url}')`
@@ -183,8 +185,8 @@ export function HeroSection({ recipes = [] }: HeroSectionProps) {
       </div>
 
       {/* Bouncing Arrow */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-20 pb-4">
-        <Link href="#recipes">
+      <div className="absolute bottom-0 left-0 w-full flex justify-center pb-4 z-20 pointer-events-none">
+        <Link href="#recipes" className="animate-bounce pointer-events-auto">
           <div className="p-3 rounded-full bg-white/80 backdrop-blur-md border border-black/10 shadow-sm hover:bg-white transition-colors">
             <ArrowDown className="w-6 h-6 text-black" />
           </div>

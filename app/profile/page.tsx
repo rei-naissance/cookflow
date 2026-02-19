@@ -5,6 +5,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import { RecipeGrid } from '@/components/RecipeGrid'
 import { User, Heart, ChefHat, Camera, X, Loader2, Plus } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -42,6 +43,10 @@ export default function ProfilePage() {
         .eq('id', user.id)
         .single()
       setProfile(profileData)
+      if (profileData) {
+        setEditName(profileData.name || '')
+        setEditAvatarPreview(profileData.avatar_url || null)
+      }
 
       const { data: submitted } = await supabase
         .from('recipes')
@@ -91,18 +96,41 @@ export default function ProfilePage() {
     )
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  }
+
   return (
-    <div className="min-h-screen bg-background py-12 animate-page-enter">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen bg-background py-12"
+    >
       <div className="container max-w-5xl px-4 md:px-6 mx-auto space-y-12">
         {/* Profile Header */}
-        <div className="bg-card border border-border rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden">
+        <motion.div variants={itemVariants} className="bg-card border border-border rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden">
           {/* Decorative background gradient */}
           <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent"></div>
 
           <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 pt-4">
             {/* Avatar */}
             <div className="relative group">
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-card bg-muted flex items-center justify-center overflow-hidden shadow-xl">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-card bg-muted flex items-center justify-center overflow-hidden shadow-xl"
+              >
                 {profile?.avatar_url ? (
                   <img
                     src={profile.avatar_url}
@@ -112,14 +140,20 @@ export default function ProfilePage() {
                 ) : (
                   <User size={48} className="text-muted-foreground" />
                 )}
-              </div>
-              <button
-                onClick={() => setEditOpen(true)}
-                className="absolute bottom-0 right-0 p-2 bg-primary text-primary-foreground rounded-full shadow-lg hover:scale-110 transition-transform"
+              </motion.div>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  setEditName(profile?.name || '')
+                  setEditAvatarPreview(profile?.avatar_url || null)
+                  setEditOpen(true)
+                }}
+                className="absolute bottom-0 right-0 p-2 bg-primary text-primary-foreground rounded-full shadow-lg transition-transform"
                 title="Edit Profile"
               >
                 <Camera size={16} />
-              </button>
+              </motion.button>
             </div>
 
             {/* User Info */}
@@ -147,12 +181,12 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Content Tabs/Sections */}
         <div className="space-y-16">
           {/* Submitted Recipes */}
-          <div className="space-y-6">
+          <motion.div variants={itemVariants} className="space-y-6">
             <div className="flex items-center gap-3 border-b border-border pb-4">
               <div className="p-2 bg-primary/10 rounded-xl text-primary">
                 <ChefHat size={24} />
@@ -173,137 +207,146 @@ export default function ProfilePage() {
                 </p>
                 <a
                   href="/submit"
-                  className="inline-flex items-center gap-2 btn-primary px-6 py-2.5 rounded-full"
+                  className="inline-flex items-center gap-2 btn-primary px-6 py-2.5 rounded-full hover:scale-105 transition-transform"
                 >
                   <Plus size={18} />
                   <span>Submit Recipe</span>
                 </a>
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Favorite Recipes section removed */}
         </div>
 
         {/* Edit Profile Modal */}
-        {editOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border p-6 relative animate-in zoom-in-95 duration-200">
-              <button
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors"
-                onClick={() => setEditOpen(false)}
+        <AnimatePresence>
+          {editOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border p-6 relative"
               >
-                <X size={20} />
-              </button>
+                <button
+                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors"
+                  onClick={() => setEditOpen(false)}
+                >
+                  <X size={20} />
+                </button>
 
-              <h2 className="text-2xl font-bold mb-6">Edit Profile</h2>
+                <h2 className="text-2xl font-bold mb-6">Edit Profile</h2>
 
-              <form
-                onSubmit={async e => {
-                  e.preventDefault()
-                  setEditLoading(true)
-                  setEditError('')
-                  let avatarUrl = profile?.avatar_url || null
-                  if (!user) {
-                    setEditError('User not found. Please log in again.')
-                    setEditLoading(false)
-                    return
-                  }
-                  if (editAvatarFile) {
-                    const fileExt = editAvatarFile.name.split('.').pop()
-                    const fileName = `${user.id}_${Date.now()}.${fileExt}`
-                    const { error: uploadError } = await supabase.storage
-                      .from('profile-images')
-                      .upload(fileName, editAvatarFile, { upsert: true })
-                    if (uploadError) {
-                      setEditError(uploadError.message)
+                <form
+                  onSubmit={async e => {
+                    e.preventDefault()
+                    setEditLoading(true)
+                    setEditError('')
+                    let avatarUrl = profile?.avatar_url || null
+                    if (!user) {
+                      setEditError('User not found. Please log in again.')
                       setEditLoading(false)
                       return
                     }
-                    avatarUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/profile-images/${fileName}`
-                  }
-                  const { error: updateError } = await supabase
-                    .from('users')
-                    .update({ name: editName, avatar_url: avatarUrl })
-                    .eq('id', user.id)
-                  if (updateError) {
-                    setEditError(updateError.message)
-                  } else {
-                    setProfile({ ...profile, name: editName, avatar_url: avatarUrl })
-                    setEditOpen(false)
-                  }
-                  setEditLoading(false)
-                }}
-                className="space-y-6"
-              >
-                <div className="flex justify-center">
-                  <div className="relative group">
-                    <div className="w-24 h-24 rounded-full border-4 border-background bg-muted flex items-center justify-center overflow-hidden">
-                      {editAvatarPreview ? (
-                        <img src={editAvatarPreview} alt="Preview" className="w-full h-full object-cover" />
-                      ) : (
-                        <User size={32} className="text-muted-foreground" />
-                      )}
+                    if (editAvatarFile) {
+                      const fileExt = editAvatarFile.name.split('.').pop()
+                      const fileName = `${user.id}_${Date.now()}.${fileExt}`
+                      const { error: uploadError } = await supabase.storage
+                        .from('profile-images')
+                        .upload(fileName, editAvatarFile, { upsert: true })
+                      if (uploadError) {
+                        setEditError(uploadError.message)
+                        setEditLoading(false)
+                        return
+                      }
+                      avatarUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/profile-images/${fileName}`
+                    }
+                    const { error: updateError } = await supabase
+                      .from('users')
+                      .update({ name: editName, avatar_url: avatarUrl })
+                      .eq('id', user.id)
+                    if (updateError) {
+                      setEditError(updateError.message)
+                    } else {
+                      setProfile({ ...profile, name: editName, avatar_url: avatarUrl })
+                      setEditOpen(false)
+                    }
+                    setEditLoading(false)
+                  }}
+                  className="space-y-6"
+                >
+                  <div className="flex justify-center">
+                    <div className="relative group">
+                      <div className="w-24 h-24 rounded-full border-4 border-background bg-muted flex items-center justify-center overflow-hidden">
+                        {editAvatarPreview ? (
+                          <img src={editAvatarPreview} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <User size={32} className="text-muted-foreground" />
+                        )}
+                      </div>
+                      <label
+                        htmlFor="edit-avatar"
+                        className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full"
+                      >
+                        <Camera size={24} />
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="edit-avatar"
+                        className="hidden"
+                        onChange={e => {
+                          const file = e.target.files?.[0] || null
+                          setEditAvatarFile(file)
+                          if (file) {
+                            const reader = new FileReader()
+                            reader.onload = () => setEditAvatarPreview(reader.result as string)
+                            reader.readAsDataURL(file)
+                          }
+                        }}
+                      />
                     </div>
-                    <label
-                      htmlFor="edit-avatar"
-                      className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full"
-                    >
-                      <Camera size={24} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Display Name
                     </label>
                     <input
-                      type="file"
-                      accept="image/*"
-                      id="edit-avatar"
-                      className="hidden"
-                      onChange={e => {
-                        const file = e.target.files?.[0] || null
-                        setEditAvatarFile(file)
-                        if (file) {
-                          const reader = new FileReader()
-                          reader.onload = () => setEditAvatarPreview(reader.result as string)
-                          reader.readAsDataURL(file)
-                        }
-                      }}
+                      type="text"
+                      value={editName}
+                      placeholder={profile?.name || 'Enter your name'}
+                      onChange={e => setEditName(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Display Name
-                  </label>
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={e => setEditName(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                </div>
+                  {editError && (
+                    <div className="p-3 text-sm text-red-500 bg-red-500/10 rounded-md border border-red-500/20">
+                      {editError}
+                    </div>
+                  )}
 
-                {editError && (
-                  <div className="p-3 text-sm text-red-500 bg-red-500/10 rounded-md border border-red-500/20">
-                    {editError}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={editLoading}
-                  className="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                >
-                  {editLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : 'Save Changes'}
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    disabled={editLoading}
+                    className="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                  >
+                    {editLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : 'Save Changes'}
+                  </button>
+                </form>
+              </motion.div>
             </div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   )
 }

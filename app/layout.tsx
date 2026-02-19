@@ -4,7 +4,7 @@ import './globals.css'
 import { AuthProvider } from '@/components/AuthProvider'
 import { Navbar } from '@/components/Navbar'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
 export const metadata: Metadata = {
   title: 'CookFlow - Interactive Recipe App',

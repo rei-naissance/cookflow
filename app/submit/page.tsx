@@ -1,12 +1,19 @@
 'use client'
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import { createClientSupabaseClient } from '@/lib/supabaseClient'
-import { Plus, Minus, Clock, Upload, X } from 'lucide-react'
+import { Plus, Minus, Clock, Upload, X, ChevronDown, Check } from 'lucide-react'
 import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
+import { clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+function cn(...inputs: (string | undefined | null | false)[]) {
+  return twMerge(clsx(inputs))
+}
 
 const categories = [
   'Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Snack', 'Appetizer', 'Vegan', 'Vegetarian'
@@ -21,6 +28,90 @@ interface Step {
 
 interface Ingredient {
   text: string
+}
+
+// Animated Dropdown Component
+function CustomSelect({
+  label,
+  value,
+  onChange,
+  options
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  options: string[]
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        {label}
+      </label>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "w-full flex items-center justify-between px-3 py-2 text-sm border bg-background rounded-md transition-all duration-200",
+          isOpen ? "ring-2 ring-primary border-primary" : "border-input hover:border-gray-400"
+        )}
+      >
+        <span>{value}</span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown size={16} className="text-gray-500" />
+        </motion.div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden"
+          >
+            <div className="max-h-60 overflow-auto py-1">
+              {options.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => {
+                    onChange(option)
+                    setIsOpen(false)
+                  }}
+                  className={cn(
+                    "w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between group",
+                    value === option ? "text-primary font-medium bg-primary/5" : "text-gray-700"
+                  )}
+                >
+                  {option}
+                  {value === option && (
+                    <Check size={16} className="text-primary" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
 }
 
 export default function SubmitRecipePage() {
@@ -41,16 +132,10 @@ export default function SubmitRecipePage() {
   const [error, setError] = useState('')
 
   // Redirect if not authenticated (client-only)
-  // and perform any localStorage logic (if needed)
-  // This ensures router and localStorage are only accessed on the client
   useEffect(() => {
     if (!user) {
       router.push('/login')
     }
-    // Example: localStorage usage (add your logic here if needed)
-    // if (typeof window !== 'undefined') {
-    //   localStorage.setItem('someKey', 'someValue')
-    // }
   }, [user, router])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +199,7 @@ export default function SubmitRecipePage() {
       if (image && user) {
         const fileExt = image.name.split('.').pop()
         const fileName = `${user.id}/${Date.now()}.${fileExt}`
-        
+
         const { error: uploadError } = await supabase.storage
           .from('recipe-images')
           .upload(fileName, image)
@@ -190,18 +275,42 @@ export default function SubmitRecipePage() {
     }
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 300, damping: 24 }
+    }
+  }
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
+      <motion.div variants={itemVariants} className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Submit a Recipe</h1>
         <p className="text-gray-600">Share your favorite recipe with the CookFlow community</p>
-      </div>
+      </motion.div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Info */}
-        <div className="card p-6">
+        <motion.div variants={itemVariants} className="card p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -218,33 +327,21 @@ export default function SubmitRecipePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
-              </label>
-              <select
+              <CustomSelect
+                label="Category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="input-field"
-              >
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+                onChange={setCategory}
+                options={categories}
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Difficulty
-              </label>
-              <select
+              <CustomSelect
+                label="Difficulty"
                 value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value as 'Easy' | 'Medium' | 'Hard')}
-                className="input-field"
-              >
-                {difficulties.map((diff) => (
-                  <option key={diff} value={diff}>{diff}</option>
-                ))}
-              </select>
+                onChange={(val) => setDifficulty(val as any)}
+                options={difficulties}
+              />
             </div>
 
             <div>
@@ -273,19 +370,19 @@ export default function SubmitRecipePage() {
               />
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Image Upload */}
-        <div className="card p-6">
+        <motion.div variants={itemVariants} className="card p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Recipe Image</h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Upload Image (optional)
               </label>
               <div className="flex items-center space-x-4">
-                <label className="cursor-pointer inline-flex items-center space-x-2 btn-secondary">
+                <label className="cursor-pointer inline-flex items-center space-x-2 btn-secondary hover:bg-secondary/80 transition-colors">
                   <Upload size={16} />
                   <span>Choose Image</span>
                   <input
@@ -302,7 +399,7 @@ export default function SubmitRecipePage() {
                       setImage(null)
                       setImagePreview(null)
                     }}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-red-600 hover:text-red-700 transition-colors bg-red-50 p-2 rounded-full hover:bg-red-100"
                   >
                     <X size={16} />
                   </button>
@@ -310,174 +407,216 @@ export default function SubmitRecipePage() {
               </div>
             </div>
 
-            {imagePreview && (
-              <div className="relative w-full h-48 rounded-lg overflow-hidden">
-                <Image
-                  src={imagePreview}
-                  alt="Recipe preview"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
+            <AnimatePresence>
+              {imagePreview && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="relative w-full h-48 rounded-lg overflow-hidden shadow-md"
+                >
+                  <Image
+                    src={imagePreview}
+                    alt="Recipe preview"
+                    fill
+                    className="object-cover"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
 
         {/* Ingredients */}
-        <div className="card p-6">
+        <motion.div variants={itemVariants} className="card p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-900">Ingredients</h2>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               type="button"
               onClick={addIngredient}
               className="flex items-center space-x-1 btn-secondary"
             >
               <Plus size={16} />
               <span>Add Ingredient</span>
-            </button>
+            </motion.button>
           </div>
 
           <div className="space-y-3">
-            {ingredients.map((ingredient, index) => (
-              <div key={index} className="flex items-center space-x-3">
-                <span className="text-sm text-gray-500 w-8">{index + 1}.</span>
-                <input
-                  type="text"
-                  value={ingredient.text}
-                  onChange={(e) => updateIngredient(index, e.target.value)}
-                  className="flex-1 input-field"
-                  placeholder="e.g., 2 cups all-purpose flour"
-                  required
-                />
-                {ingredients.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeIngredient(index)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Minus size={16} />
-                  </button>
-                )}
-              </div>
-            ))}
+            <AnimatePresence initial={false}>
+              {ingredients.map((ingredient, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, height: 0, x: -20 }}
+                  animate={{ opacity: 1, height: 'auto', x: 0 }}
+                  exit={{ opacity: 0, height: 0, x: 20 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center space-x-3 overflow-hidden"
+                >
+                  <span className="text-sm text-gray-500 w-8">{index + 1}.</span>
+                  <input
+                    type="text"
+                    value={ingredient.text}
+                    onChange={(e) => updateIngredient(index, e.target.value)}
+                    className="flex-1 input-field"
+                    placeholder="e.g., 2 cups all-purpose flour"
+                    required
+                    autoFocus={ingredients.length > 1 && index === ingredients.length - 1}
+                  />
+                  {ingredients.length > 1 && (
+                    <motion.button
+                      whileHover={{ scale: 1.1, color: '#ef4444' }}
+                      whileTap={{ scale: 0.9 }}
+                      type="button"
+                      onClick={() => removeIngredient(index)}
+                      className="text-gray-400 p-1 hover:bg-red-50 rounded-full transition-colors"
+                    >
+                      <Minus size={16} />
+                    </motion.button>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
 
         {/* Steps */}
-        <div className="card p-6">
+        <motion.div variants={itemVariants} className="card p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-900">Instructions</h2>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               type="button"
               onClick={addStep}
               className="flex items-center space-x-1 btn-secondary"
             >
               <Plus size={16} />
               <span>Add Step</span>
-            </button>
+            </motion.button>
           </div>
 
           <div className="space-y-6">
-            {steps.map((step, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium text-gray-900">Step {index + 1}</h3>
-                  {steps.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeStep(index)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Minus size={16} />
-                    </button>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Instruction *
-                    </label>
-                    <textarea
-                      value={step.instruction}
-                      onChange={(e) => updateStep(index, 'instruction', e.target.value)}
-                      className="input-field resize-none"
-                      rows={3}
-                      placeholder="Describe what to do in this step..."
-                      required
-                    />
+            <AnimatePresence initial={false}>
+              {steps.map((step, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, height: 0, y: 20 }}
+                  animate={{ opacity: 1, height: 'auto', y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-hidden"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-medium text-gray-900">Step {index + 1}</h3>
+                    {steps.length > 1 && (
+                      <motion.button
+                        whileHover={{ scale: 1.1, color: '#ef4444' }}
+                        whileTap={{ scale: 0.9 }}
+                        type="button"
+                        onClick={() => removeStep(index)}
+                        className="text-gray-400 p-1 hover:bg-red-50 rounded-full transition-colors"
+                      >
+                        <Minus size={16} />
+                      </motion.button>
+                    )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Timer (optional)
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Clock size={16} className="text-gray-400" />
-                      <input
-                        type="number"
-                        min="0"
-                        value={Math.floor((step.timer_duration || 0) / 3600) || ''}
-                        onChange={e => {
-                          const hours = parseInt(e.target.value) || 0;
-                          const minutes = Math.floor(((step.timer_duration || 0) % 3600) / 60);
-                          const seconds = (step.timer_duration || 0) % 60;
-                          updateStep(index, 'timer_duration', hours * 3600 + minutes * 60 + seconds);
-                        }}
-                        className="input-field w-16"
-                        placeholder="hh"
-                        aria-label="Hours"
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Instruction *
+                      </label>
+                      <textarea
+                        value={step.instruction}
+                        onChange={(e) => updateStep(index, 'instruction', e.target.value)}
+                        className="input-field resize-none focus:ring-primary focus:border-primary"
+                        rows={3}
+                        placeholder="Describe what to do in this step..."
+                        required
+                        autoFocus={steps.length > 1 && index === steps.length - 1}
                       />
-                      <span className="text-sm text-gray-500">h</span>
-                      <input
-                        type="number"
-                        min="0"
-                        max="59"
-                        value={Math.floor(((step.timer_duration || 0) % 3600) / 60) || ''}
-                        onChange={e => {
-                          const minutes = parseInt(e.target.value) || 0;
-                          const hours = Math.floor((step.timer_duration || 0) / 3600);
-                          const seconds = (step.timer_duration || 0) % 60;
-                          updateStep(index, 'timer_duration', hours * 3600 + minutes * 60 + seconds);
-                        }}
-                        className="input-field w-16"
-                        placeholder="mm"
-                        aria-label="Minutes"
-                      />
-                      <span className="text-sm text-gray-500">m</span>
-                      <input
-                        type="number"
-                        min="0"
-                        max="59"
-                        value={(step.timer_duration || 0) % 60 || ''}
-                        onChange={e => {
-                          const seconds = parseInt(e.target.value) || 0;
-                          const hours = Math.floor((step.timer_duration || 0) / 3600);
-                          const minutes = Math.floor(((step.timer_duration || 0) % 3600) / 60);
-                          updateStep(index, 'timer_duration', hours * 3600 + minutes * 60 + seconds);
-                        }}
-                        className="input-field w-16"
-                        placeholder="ss"
-                        aria-label="Seconds"
-                      />
-                      <span className="text-sm text-gray-500">s</span>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Timer (optional)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <Clock size={16} className="text-gray-400" />
+                        <input
+                          type="number"
+                          min="0"
+                          value={Math.floor((step.timer_duration || 0) / 3600) || ''}
+                          onChange={e => {
+                            const hours = parseInt(e.target.value) || 0;
+                            const minutes = Math.floor(((step.timer_duration || 0) % 3600) / 60);
+                            const seconds = (step.timer_duration || 0) % 60;
+                            updateStep(index, 'timer_duration', hours * 3600 + minutes * 60 + seconds);
+                          }}
+                          className="input-field w-16 text-center"
+                          placeholder="hh"
+                          aria-label="Hours"
+                        />
+                        <span className="text-sm text-gray-500">h</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max="59"
+                          value={Math.floor(((step.timer_duration || 0) % 3600) / 60) || ''}
+                          onChange={e => {
+                            const minutes = parseInt(e.target.value) || 0;
+                            const hours = Math.floor((step.timer_duration || 0) / 3600);
+                            const seconds = (step.timer_duration || 0) % 60;
+                            updateStep(index, 'timer_duration', hours * 3600 + minutes * 60 + seconds);
+                          }}
+                          className="input-field w-16 text-center"
+                          placeholder="mm"
+                          aria-label="Minutes"
+                        />
+                        <span className="text-sm text-gray-500">m</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max="59"
+                          value={(step.timer_duration || 0) % 60 || ''}
+                          onChange={e => {
+                            const seconds = parseInt(e.target.value) || 0;
+                            const hours = Math.floor((step.timer_duration || 0) / 3600);
+                            const minutes = Math.floor(((step.timer_duration || 0) % 3600) / 60);
+                            updateStep(index, 'timer_duration', hours * 3600 + minutes * 60 + seconds);
+                          }}
+                          className="input-field w-16 text-center"
+                          placeholder="ss"
+                          aria-label="Seconds"
+                        />
+                        <span className="text-sm text-gray-500">s</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
 
         {/* Error Display */}
-        {error && (
-          <div className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-md p-3">
-            {error}
-          </div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-md p-3"
+            >
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Submit Button */}
-        <div className="flex justify-end space-x-4">
+        <motion.div variants={itemVariants} className="flex justify-end space-x-4">
           <button
             type="button"
             onClick={() => router.back()}
@@ -485,15 +624,17 @@ export default function SubmitRecipePage() {
           >
             Cancel
           </button>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px]"
           >
             {loading ? 'Submitting...' : 'Submit Recipe'}
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </form>
-    </div>
+    </motion.div>
   )
 }

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Clock, Users, ChefHat, Star, Play } from 'lucide-react'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { ReviewSection } from '@/components/ReviewSection'
+import * as motion from 'framer-motion/client'
 
 export default async function RecipePage({ params }: { params: { id: string } }) {
   const supabase = supabaseAdmin
@@ -36,10 +37,6 @@ export default async function RecipePage({ params }: { params: { id: string } })
 
   console.log('Found recipe:', recipe)
 
-  // Sort ingredients and steps by order
-  // const sortedIngredients = recipe.ingredients?.sort((a, b) => a.order_index - b.order_index) || []
-  // const sortedSteps = recipe.steps?.sort((a, b) => a.step_number - b.step_number) || []
-
   const sortedSteps = Array.isArray(recipe.steps)
     ? [...recipe.steps].sort((a, b) => a.step_number - b.step_number)
     : []
@@ -62,10 +59,34 @@ export default async function RecipePage({ params }: { params: { id: string } })
     Hard: 'bg-red-100 text-red-800'
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 300, damping: 24 }
+    }
+  }
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
       {/* Header */}
-      <div className="mb-8">
+      <motion.div variants={itemVariants} className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-3xl font-bold text-gray-900">{recipe.title}</h1>
           <FavoriteButton recipeId={recipe.id} />
@@ -101,8 +122,8 @@ export default async function RecipePage({ params }: { params: { id: string } })
                   key={star}
                   size={20}
                   className={`${star <= avgRating
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300'
+                    ? 'text-yellow-400 fill-current'
+                    : 'text-gray-300'
                     }`}
                 />
               ))}
@@ -112,36 +133,41 @@ export default async function RecipePage({ params }: { params: { id: string } })
             </span>
           </div>
         )}
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-8">
           {/* Recipe Image */}
           {recipe.image_url && (
-            <div className="relative h-64 md:h-80 mb-8 rounded-lg overflow-hidden">
+            <motion.div variants={itemVariants} className="relative h-64 md:h-80 rounded-lg overflow-hidden">
               <Image
                 src={recipe.image_url}
                 alt={recipe.title}
                 fill
                 className="object-cover"
               />
-            </div>
+            </motion.div>
           )}
 
           {/* Start Cooking Button */}
-          <div className="mb-8">
+          <motion.div variants={itemVariants}>
             <Link
               href={`/cook/${recipe.id}`}
-              className="inline-flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
             >
-              <Play size={20} />
-              <span>Start Cooking</span>
+              <motion.span
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+              >
+                <Play size={20} />
+                <span>Start Cooking</span>
+              </motion.span>
             </Link>
-          </div>
+          </motion.div>
 
           {/* Steps Preview */}
-          <div className="mb-8">
+          <motion.div variants={itemVariants}>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Instructions</h2>
             <div className="space-y-4">
               {sortedSteps.map((step, index) => (
@@ -163,13 +189,13 @@ export default async function RecipePage({ params }: { params: { id: string } })
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Recipe Info */}
-          <div className="card p-6">
+          <motion.div variants={itemVariants} className="card p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Recipe Info</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
@@ -202,10 +228,10 @@ export default async function RecipePage({ params }: { params: { id: string } })
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Ingredients */}
-          <div className="card p-6">
+          <motion.div variants={itemVariants} className="card p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Ingredients</h3>
             <ul className="space-y-2">
               {sortedIngredients.map((ingredient) => (
@@ -215,14 +241,14 @@ export default async function RecipePage({ params }: { params: { id: string } })
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* Reviews Section */}
-      <div className="mt-12">
+      <motion.div variants={itemVariants} className="mt-12">
         <ReviewSection recipeId={recipe.id} reviews={recipe.reviews || []} />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

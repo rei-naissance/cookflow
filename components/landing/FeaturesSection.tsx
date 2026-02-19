@@ -8,21 +8,21 @@ export function FeaturesSection() {
       title: 'Championship recipes',
       description: 'We have created a list of tried and true recipes from coffee brewing Champions.',
       linkText: 'See recipes',
-      href: '/recipes?collection=championship'
+      href: '/?sort=popular#recipes'
     },
     {
       icon: Star,
       title: 'Explore the latest',
       description: 'Stay up to date and check out our recently added recipes. You will not regret.',
       linkText: 'See recipes',
-      href: '/recipes?sort=latest'
+      href: '/?sort=latest#recipes'
     },
     {
       icon: Zap,
       title: 'Fast and furious',
       description: "Don't like standing at the table for a long time? Here you will find short but still good recipes.",
       linkText: 'See recipes',
-      href: '/recipes?tag=fast'
+      href: '/?time=30#recipes'
     }
   ]
 
