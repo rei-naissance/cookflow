@@ -6,7 +6,7 @@ import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Mail, Lock, User, Eye, EyeOff, Check, AlertCircle, Loader2, ArrowLeft } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, Variants } from 'framer-motion'
 
 const CAROUSEL_IMAGES = [
   '/login-image.jpg',
@@ -87,7 +87,7 @@ export default function LoginPage() {
     }
   }
 
-  const fadeInVariants = {
+  const fadeInVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: (custom: number) => ({
       opacity: 1,

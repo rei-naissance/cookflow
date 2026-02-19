@@ -7,6 +7,7 @@ import { Clock, Users, ChefHat, Star, Play } from 'lucide-react'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { ReviewSection } from '@/components/ReviewSection'
 import * as motion from 'framer-motion/client'
+import { Variants } from 'framer-motion'
 
 export default async function RecipePage({ params }: { params: { id: string } }) {
   const supabase = supabaseAdmin
@@ -59,7 +60,7 @@ export default async function RecipePage({ params }: { params: { id: string } })
     Hard: 'bg-red-100 text-red-800'
   }
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -69,7 +70,7 @@ export default async function RecipePage({ params }: { params: { id: string } })
     }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,

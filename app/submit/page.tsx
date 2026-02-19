@@ -7,7 +7,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import { Plus, Minus, Clock, Upload, X, ChevronDown, Check } from 'lucide-react'
 import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, Variants } from 'framer-motion'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -275,7 +275,7 @@ export default function SubmitRecipePage() {
     }
   }
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -285,7 +285,7 @@ export default function SubmitRecipePage() {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,

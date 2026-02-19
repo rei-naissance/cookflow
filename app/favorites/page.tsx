@@ -7,7 +7,7 @@ import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import { RecipeGrid } from '@/components/RecipeGrid'
 import { Heart, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 
 export default function FavoritesPage() {
   const { user } = useAuth()
@@ -62,7 +62,7 @@ export default function FavoritesPage() {
     )
   }
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -72,7 +72,7 @@ export default function FavoritesPage() {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   }

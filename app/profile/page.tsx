@@ -5,7 +5,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import { RecipeGrid } from '@/components/RecipeGrid'
 import { User, Heart, ChefHat, Camera, X, Loader2, Plus } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, Variants } from 'framer-motion'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -96,7 +96,7 @@ export default function ProfilePage() {
     )
   }
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -106,7 +106,7 @@ export default function ProfilePage() {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   }
