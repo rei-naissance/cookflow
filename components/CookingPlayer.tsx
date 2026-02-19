@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Play, Pause, RotateCcw, Clock, CheckCircle, Volume2, VolumeX, ChefHat, Timer } from 'lucide-react'
+import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { generateSpeech } from '@/lib/tts'
 
@@ -303,14 +304,48 @@ export function CookingPlayer({ recipe }: CookingPlayerProps) {
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
+      {/* Segmented Progress Bar */}
+      <div className="mb-8 flex gap-2 sm:gap-3 h-2.5">
+        {steps.map((_, index) => (
           <div
-            className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-          />
-        </div>
+            key={index}
+            className="flex-1 h-full rounded-full bg-secondary relative overflow-hidden group border border-transparent transition-all"
+          >
+            <motion.div
+              initial={false}
+              animate={{
+                width: index <= currentStep ? '100%' : '0%',
+                opacity: index <= currentStep ? 1 : 0
+              }}
+              transition={{
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
+                delay: index <= currentStep ? index * 0.05 : 0 // Subtle stagger
+              }}
+              className={`h-full rounded-full shadow-sm ${index === currentStep ? "bg-primary relative" : "bg-primary/80"}`}
+            >
+              {index === currentStep && (
+                <motion.div
+                  animate={{
+                    opacity: [0.2, 0.5, 0.2],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="absolute inset-0 bg-white/20 rounded-full"
+                />
+              )}
+            </motion.div>
+
+            {/* Tooltip on hover */}
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-bold">
+              Step {index + 1}
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -414,7 +449,7 @@ export function CookingPlayer({ recipe }: CookingPlayerProps) {
                       </div>
                     ) : (
                       <div className={`text-5xl font-mono font-bold tracking-tight tabular-nums ${timerFinished ? 'text-green-500 animate-pulse' :
-                          isTimerRunning ? 'text-primary' : 'text-foreground'
+                        isTimerRunning ? 'text-primary' : 'text-foreground'
                         }`}>
                         {timer !== null ? formatTime(timer) : '0:00'}
                       </div>
@@ -503,8 +538,8 @@ export function CookingPlayer({ recipe }: CookingPlayerProps) {
               {recipe.ingredients.map((ingredient) => (
                 <li key={ingredient.id} className="flex items-start gap-3 text-sm group">
                   <div className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors ${steps.slice(0, currentStep + 1).some(s => s.instruction.toLowerCase().includes(ingredient.text.toLowerCase())) // Simple heuristic: highlight if potentially used
-                      ? 'bg-primary'
-                      : 'bg-muted-foreground/40 group-hover:bg-primary/50'
+                    ? 'bg-primary'
+                    : 'bg-muted-foreground/40 group-hover:bg-primary/50'
                     }`}></div>
                   <span className="text-muted-foreground group-hover:text-foreground transition-colors">{ingredient.text}</span>
                 </li>
@@ -521,10 +556,10 @@ export function CookingPlayer({ recipe }: CookingPlayerProps) {
                   key={step.id}
                   onClick={() => setCurrentStep(index)}
                   className={`w-full text-left p-3 rounded-lg text-sm transition-all border ${index === currentStep
-                      ? 'bg-primary/5 border-primary/20 text-foreground ring-1 ring-primary/20'
-                      : index < currentStep
-                        ? 'bg-secondary/50 border-transparent text-muted-foreground/80 hover:bg-secondary'
-                        : 'bg-transparent border-transparent text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                    ? 'bg-primary/5 border-primary/20 text-foreground ring-1 ring-primary/20'
+                    : index < currentStep
+                      ? 'bg-secondary/50 border-transparent text-muted-foreground/80 hover:bg-secondary'
+                      : 'bg-transparent border-transparent text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
                     }`}
                 >
                   <div className="flex items-center justify-between mb-1">

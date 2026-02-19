@@ -6,6 +6,7 @@ import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Mail, Lock, User, Eye, EyeOff, Check, AlertCircle, Loader2, ArrowLeft } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 import { motion, AnimatePresence, Variants } from 'framer-motion'
 
 const CAROUSEL_IMAGES = [
@@ -115,11 +116,11 @@ export default function LoginPage() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 transition-transform duration-300"
+              className="transition-transform duration-300"
             >
-              <span className="text-primary-foreground font-bold text-xl">C</span>
+              <Logo size="md" />
             </motion.div>
-            <span className="text-2xl font-bold tracking-tight text-foreground">CookFlow</span>
+            <span className="text-2xl font-bold tracking-tight text-primary">CookFlow</span>
           </Link>
 
           <div>
@@ -268,6 +269,7 @@ export default function LoginPage() {
                   />
                   <button
                     type="button"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
                   >
@@ -403,7 +405,7 @@ export default function LoginPage() {
         </div>
 
         {/* Photo Credit */}
-        <div className="absolute bottom-6 right-8 z-20 text-white/50 text-xs font-medium tracking-wide">
+        <div className="absolute bottom-6 right-8 z-20 text-primary/50 text-xs font-medium tracking-wide">
           Photo by ROMAN ODINTSOV
         </div>
       </div>

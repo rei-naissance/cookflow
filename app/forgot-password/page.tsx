@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { createClientSupabaseClient } from '@/lib/supabaseClient'
-import { ArrowLeft, Loader2, Mail, CheckCircle2, AlertCircle } from 'lucide-react'
+import { User, ArrowLeft, Loader2, Mail, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { User } from 'lucide-react'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -46,9 +46,9 @@ export default function ForgotPasswordPage() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 15 }}
-          className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 mb-4"
+          className="flex justify-center mb-4"
         >
-          <span className="text-primary-foreground font-bold text-xl">C</span>
+          <Logo size="lg" />
         </motion.div>
 
         <motion.h2

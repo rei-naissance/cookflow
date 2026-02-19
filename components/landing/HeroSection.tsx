@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight, Star, Heart, Clock, Loader2, ArrowDown } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
 interface Recipe {
@@ -137,6 +138,7 @@ export function HeroSection({ recipes = [] }: HeroSectionProps) {
 
                       {/* Heart Button */}
                       <button
+                        aria-label={`Add ${currentRecipe.title} to favorites`}
                         className="h-12 w-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-red-500/80 hover:scale-110 transition-all active:scale-95 group/heart"
                         onClick={(e) => {
                           e.preventDefault() // Prevent navigation to recipe
@@ -167,15 +169,27 @@ export function HeroSection({ recipes = [] }: HeroSectionProps) {
                     </div>
                   </div>
 
-                  {/* Progress Bar Top */}
-                  <div className="absolute top-8 left-8 right-8 h-1 bg-white/20 rounded-full overflow-hidden z-20">
-                    <div
-                      className="h-full bg-white rounded-full transition-all duration-[8000ms] ease-linear"
-                      style={{
-                        width: `${((currentIndex + 1) / recipes.length) * 100}%`,
-                        transition: 'width 0.5s ease-out'
-                      }}
-                    ></div>
+                  {/* Segmented Progress Bar Top */}
+                  <div className="absolute top-8 left-8 right-8 flex gap-2 h-1 z-20">
+                    {recipes.map((_, index) => (
+                      <div
+                        key={index}
+                        className="flex-1 h-full bg-white/20 rounded-full overflow-hidden"
+                      >
+                        <motion.div
+                          initial={false}
+                          animate={{
+                            width: index < currentIndex ? '100%' : index === currentIndex ? '100%' : '0%',
+                            opacity: index <= currentIndex ? 1 : 0.3
+                          }}
+                          transition={{
+                            duration: index === currentIndex ? 8 : 0.5,
+                            ease: index === currentIndex ? "linear" : "easeOut"
+                          }}
+                          className={`h-full bg-white rounded-full`}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               </Link>

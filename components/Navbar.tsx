@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useAuth } from './AuthProvider'
 import { User, LogOut, Heart, Plus, Newspaper } from 'lucide-react'
+import { Logo } from './Logo'
 
 export function Navbar() {
   const { user, signOut } = useAuth()
@@ -13,10 +14,8 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">C</span>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-foreground">CookFlow</span>
+            <Logo size="sm" />
+            <span className="text-xl font-bold tracking-tight text-primary">CookFlow</span>
           </Link>
 
           {/* Navigation Links */}
@@ -27,11 +26,11 @@ export function Navbar() {
             </Link>
             {user && (
               <>
-                <Link href="/submit" className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/submit" className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-primary transition-colors" aria-label="Submit a new recipe">
                   <Plus size={18} />
                   <span>Submit Recipe</span>
                 </Link>
-                <Link href="/favorites" className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/favorites" className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-primary transition-colors" aria-label="View your favorite recipes">
                   <Heart size={18} />
                   <span>Favorites</span>
                 </Link>
@@ -50,6 +49,7 @@ export function Navbar() {
                 <span className="h-4 w-px bg-border mx-2" />
                 <button
                   onClick={signOut}
+                  aria-label="Sign out of your account"
                   className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-destructive transition-colors px-3 py-2 rounded-lg hover:bg-secondary"
                 >
                   <LogOut size={18} />

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { Logo } from './Logo'
 
 export function PagePreloader() {
   const [mounted, setMounted] = useState(true)
@@ -39,10 +40,8 @@ export function PagePreloader() {
         }`}
     >
       <div className="flex flex-col items-center gap-4 animate-in zoom-in-95 duration-500">
-        <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 mb-4 animate-bounce">
-          <span className="text-primary-foreground font-bold text-3xl">C</span>
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">CookFlow</h1>
+        <Logo size="xl" className="mb-4 animate-bounce" />
+        <h1 className="text-2xl font-bold tracking-tight text-primary">CookFlow</h1>
         <div className="flex items-center gap-2 text-muted-foreground text-sm mt-2">
           <Loader2 className="w-4 h-4 animate-spin" />
           <span>Loading assets...</span>

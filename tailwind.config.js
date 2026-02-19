@@ -65,7 +65,7 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['"SF Pro Display"', 'var(--font-inter)', 'system-ui', 'sans-serif'],
       },
     },
   },

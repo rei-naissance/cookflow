@@ -5,6 +5,7 @@ import { createClientSupabaseClient } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Lock, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('')
@@ -52,9 +53,9 @@ export default function UpdatePasswordPage() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 15 }}
-          className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 mb-4"
+          className="flex justify-center mb-4"
         >
-          <span className="text-primary-foreground font-bold text-xl">C</span>
+          <Logo size="lg" />
         </motion.div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Update your password
