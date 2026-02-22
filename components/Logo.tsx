@@ -24,7 +24,7 @@ export function Logo({ className, iconClassName, size = 'md' }: LogoProps) {
 
   return (
     <div
-      className={`bg-white border-primary flex items-center justify-center shadow-lg shadow-black/5 transition-transform duration-300 ${sizeClasses[size]} ${className || ''}`}
+      className={`bg-primary border-primary flex items-center justify-center shadow-lg shadow-black/5 transition-transform duration-300 ${sizeClasses[size]} ${className || ''}`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,7 @@ export function Logo({ className, iconClassName, size = 'md' }: LogoProps) {
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className={iconClassName || 'text-primary'}
+        className={iconClassName || 'text-primary-foreground'}
       >
         <path d="M17 21H7a2 2 0 0 1-2-2v-3a2 2 0 1 1 2-2 2 2 0 0 1 2-2 5 5 0 1 1 6 0 2 2 0 0 1 2 2 2 2 0 0 1 2 2v3a2 2 0 0 1-2 2Z" />
         <path d="M19 16H5" />

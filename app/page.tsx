@@ -92,6 +92,7 @@ export default async function HomePage({
 
   return (
     <div className="flex flex-col min-h-screen">
+      <div className="bg-noise" />
       <HeroSection recipes={recipesWithRatings.slice(0, 5)} />
 
       <FeaturesSection />
