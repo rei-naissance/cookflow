@@ -51,6 +51,17 @@ export function RecipeGrid({ recipes }: RecipeGridProps) {
     <motion.div
       key="grid"
       layout="position"
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "100px" }}
+      variants={{
+        hidden: {},
+        show: {
+          transition: {
+            staggerChildren: 0.1
+          }
+        }
+      }}
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
     >
       <AnimatePresence mode="popLayout" initial={false}>
@@ -58,8 +69,10 @@ export function RecipeGrid({ recipes }: RecipeGridProps) {
           <motion.div
             key={recipe.id}
             layout
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            variants={{
+              hidden: { opacity: 0, scale: 0.9, y: 20 },
+              show: { opacity: 1, scale: 1, y: 0 }
+            }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{
               type: "spring",
