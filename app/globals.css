@@ -112,6 +112,56 @@
   z-index: 40;
 }
 
+@keyframes topo-drift {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+
+  33% {
+    transform: scale(1.05) translate(-2%, 2%);
+  }
+
+  66% {
+    transform: scale(1.02) translate(1%, -1%);
+  }
+
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+.bg-organic-lines {
+  background-image:
+    repeating-radial-gradient(circle at 15% 50%, transparent, transparent 38px, rgba(128, 128, 128, 0.15) 39px, rgba(128, 128, 128, 0.15) 40px),
+    repeating-radial-gradient(circle at 85% 30%, transparent, transparent 58px, rgba(128, 128, 128, 0.12) 59px, rgba(128, 128, 128, 0.12) 60px),
+    repeating-radial-gradient(circle at 50% 80%, transparent, transparent 78px, rgba(128, 128, 128, 0.08) 79px, rgba(128, 128, 128, 0.08) 80px);
+  background-color: transparent;
+  animation: topo-drift 60s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-200%);
+  }
+
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2.5s infinite linear;
+}
+
 @layer base {
   * {
     @apply border-border;

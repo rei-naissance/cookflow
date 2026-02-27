@@ -102,7 +102,8 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
 
   return (
     <Link href={`/recipe/${recipe.id}`} className="group block h-full">
-      <div className="card h-full flex flex-col overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card border-border">
+      <div className="card h-full flex flex-col overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_15px_40px_-10px_rgba(255,255,255,0.08)] bg-card border-border relative z-10 group-hover:border-primary/20">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[200%] group-hover:animate-shimmer z-20 pointer-events-none dark:via-white/10" />
         {/* Recipe Image */}
         <div className="relative aspect-[4/3] bg-muted overflow-hidden">
           {recipe.image_url ? (
@@ -131,8 +132,8 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         </div>
 
         {/* Recipe Info */}
-        <div className="p-5 flex flex-col flex-grow">
-          <h3 className="font-bold text-lg text-card-foreground mb-2 line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+        <div className="p-5 flex flex-col flex-grow relative z-10">
+          <h3 className="font-bold text-lg text-card-foreground mb-2 line-clamp-2 leading-tight group-hover:text-primary transition-colors duration-300">
             {recipe.title}
           </h3>
 

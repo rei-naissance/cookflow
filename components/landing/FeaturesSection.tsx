@@ -27,7 +27,7 @@ export function FeaturesSection() {
   ]
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-16 md:py-24 bg-transparent relative z-10">
       <div className="container px-4 md:px-6">
         <div className="grid gap-8 md:grid-cols-3">
           {features.map((feature, index) => (

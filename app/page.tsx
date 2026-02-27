@@ -91,8 +91,16 @@ export default async function HomePage({
 
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen relative z-0 overflow-hidden">
       <div className="bg-noise" />
+
+      {/* Organic Topographic Linework Background */}
+      <div className="fixed inset-0 pointer-events-none -z-20 overflow-hidden bg-background">
+        <div className="absolute inset-0 bg-organic-lines w-[150vw] h-[150vh] -left-[25vw] -top-[25vh]" />
+        {/* Subtle fade overlay to keep text readable and eliminate harsh edges */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/80" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,hsl(var(--background))_100%)] opacity-60" />
+      </div>
       <HeroSection recipes={recipesWithRatings.slice(0, 5)} />
 
       <FeaturesSection />
